@@ -6,4 +6,37 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest      # Sets the build environment a machine with the latest Ubuntu installed
     steps:
-    - uses: actions/checkout@v4 # Adds a step to checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.6'
+
+      - name: Build C# code
+        run: dotnet build
+
+      - name: Run C# tests
+        run: dotnet test
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.12'
+
+      - name: Install TypeScript dependencies
+        run: npm install
+        working-directory: DotnetTemplate.Web
+
+      - name: Build TypeScript code
+        run: npm run build
+        working-directory: DotnetTemplate.Web
+
+      - name: Run TypeScript lint
+        run: npm run lint
+        working-directory: DotnetTemplate.Web
+
+      - name: Run TypeScript tests
+        run: npm t
+        working-directory: DotnetTemplate.Web
