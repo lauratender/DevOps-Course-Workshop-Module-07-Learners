@@ -8,13 +8,33 @@ pool:
 
 # And here we specify a list of "jobs"
 jobs:
-  - job: firstJob
-    displayName: "My first Job"
-    # Each job has a sequence of steps to run
+  - job: buildAndTest
+    displayName: "Build and Test Job"
     steps:
-      - script: echo "Hello World"
-        displayName: Say Hello
-      - task: Bash@3
+      - task: UseDotNet@2
         inputs:
-          targetType: 'inline'
-          script: echo "Hello World (again)"
+          packageType: 'sdk'
+          version: '8.x'
+      - script: dotnet build
+        displayName: 'Build C# code'
+      - script: dotnet test
+        displayName: 'Run C# tests'
+      - task: UseNode@1
+        inputs:
+          version: '20.x'
+      - script: |
+          cd DotnetTemplate.Web
+          npm install
+        displayName: 'Install TypeScript dependencies'
+      - script: |
+          cd DotnetTemplate.Web
+          npm run build
+        displayName: 'Build TypeScript code'
+      - script: |
+          cd DotnetTemplate.Web
+          npm run lint
+        displayName: 'Run TypeScript lint'
+      - script: |
+          cd DotnetTemplate.Web
+          npm test
+        displayName: 'Run TypeScript tests'
